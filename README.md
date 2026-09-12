@@ -1,4 +1,4 @@
-# DLUT 自动登录 - Rust 版本
+# DLUT-EDA 自动登录 - Rust 版本
 
 大连理工大学（DLUT）**开发区校区**校园网自动登录工具的 Rust 实现。
 
@@ -75,6 +75,36 @@ strip target/release/dlut_auto_login_rs
 ```bash
 ./dlut_auto_login_rs -u <username> -p <password> --daemon --pid /tmp/dlut_login.pid
 ```
+
+### 在 Linux 上使用 (systemd)
+
+创建 `/etc/systemd/system/dlut-login.service`：
+
+```bash
+sudo tee /etc/systemd/system/dlut-login.service > /dev/null <<'EOF'
+[Unit]
+Description=DLUT Campus Network Auto Login Daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/path/to/dlut_auto_login_rs -u 你的学号 -p 你的密码 --daemon
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+然后启用并启动：
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now dlut-login
+```
+
 
 ### 在 OpenWrt 上使用 (procd)
 
